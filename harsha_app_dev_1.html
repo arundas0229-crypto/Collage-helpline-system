@@ -1,1 +1,859 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Helpline & Navigation</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1565C0;
+    --blue-light: #42A5F5;
+    --blue-pale: #E3F2FD;
+    --sky: #81D4FA;
+    --white: #ffffff;
+    --dark: #0D1B3E;
+    --text: #1a2a4a;
+    --muted: #5a7099;
+    --card-bg: rgba(255,255,255,0.92);
+    --shadow: 0 8px 40px rgba(21,101,192,0.13);
+    --radius: 20px;
+    --dev-red: #c62828;
+    --dev-red-light: #ef5350;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 40%, #e8f5e9 100%); min-height: 100vh; color: var(--text); }
+
+  /* NAV */
+  nav { background: rgba(255,255,255,0.85); backdrop-filter: blur(18px); border-bottom: 1.5px solid rgba(66,165,245,0.18); position: sticky; top: 0; z-index: 100; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; box-shadow: 0 2px 24px rgba(21,101,192,0.08); }
+  .nav-logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--blue); display: flex; align-items: center; gap: 10px; }
+  .nav-logo .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--blue), var(--blue-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links button { background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; color: var(--muted); padding: 8px 16px; border-radius: 10px; transition: all 0.2s; }
+  .nav-links button:hover, .nav-links button.active { background: var(--blue-pale); color: var(--blue); }
+  .dev-login-btn { background: none; border: 1.5px solid rgba(198,40,40,0.3); color: var(--dev-red); padding: 7px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-left: 8px; }
+  .dev-login-btn:hover { background: #ffebee; }
+  .dev-login-btn.logged-in { background: var(--dev-red); color: white; border-color: var(--dev-red); }
+
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.4s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  /* HERO */
+  .hero { padding: 64px 32px 48px; text-align: center; max-width: 800px; margin: 0 auto; }
+  .hero-badge { display: inline-block; background: linear-gradient(90deg, var(--blue-light), var(--sky)); color: white; font-family: 'Sora', sans-serif; font-size: 0.75rem; font-weight: 600; padding: 6px 18px; border-radius: 99px; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase; }
+  .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: var(--dark); line-height: 1.15; margin-bottom: 16px; }
+  .hero h1 span { color: var(--blue); }
+  .hero p { color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 580px; margin: 0 auto 36px; }
+  .hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 40px; }
+  .hero-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 16px; box-shadow: var(--shadow); cursor: pointer; border: 1.5px solid transparent; transition: all 0.25s; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .hero-card:hover { border-color: var(--blue-light); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(21,101,192,0.18); }
+  .hero-card .card-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .hero-card h3 { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--dark); text-align: center; }
+  .hero-card p { font-size: 0.78rem; color: var(--muted); text-align: center; }
+
+  /* SECTION HEADER */
+  .section-wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 64px; }
+  .section-header { text-align: center; margin-bottom: 36px; }
+  .section-header h2 { font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+  .section-header p { color: var(--muted); font-size: 0.97rem; }
+
+  /* FACULTY */
+  .faculty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .faculty-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 24px; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.12); transition: all 0.25s; position: relative; }
+  .faculty-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(21,101,192,0.15); }
+  .faculty-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--blue-light)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-bottom: 16px; font-family: 'Sora', sans-serif; font-weight: 700; }
+  .faculty-card h3 { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+  .faculty-card .subject { color: var(--blue); font-size: 0.85rem; font-weight: 500; margin: 4px 0 10px; }
+  .faculty-card .meta { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+  .faculty-card .contact-btn { margin-top: 14px; background: var(--blue-pale); color: var(--blue); border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+  .faculty-card .contact-btn:hover { background: var(--blue); color: white; }
+
+  /* DELETE BUTTON (dev only) */
+  .dev-delete-btn { position: absolute; top: 12px; right: 12px; background: #ffebee; color: var(--dev-red); border: none; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; transition: all 0.2s; }
+  .dev-delete-btn:hover { background: var(--dev-red); color: white; }
+  .dev-mode .dev-delete-btn { display: block; }
+
+  /* EDIT ROW */
+  .dev-edit-row { display: none; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .dev-mode .dev-edit-row { display: flex; }
+  .edit-mini-btn { background: #e3f2fd; color: var(--blue); border: none; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .edit-mini-btn:hover { background: var(--blue); color: white; }
+
+  /* QUESTION PAPERS */
+  .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; justify-content: center; }
+  .filter-btn { background: var(--card-bg); border: 1.5px solid rgba(66,165,245,0.25); border-radius: 10px; padding: 8px 20px; font-size: 0.87rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--muted); transition: all 0.2s; }
+  .filter-btn.active, .filter-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
+  .papers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .paper-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.12); display: flex; align-items: center; gap: 16px; transition: all 0.25s; cursor: pointer; position: relative; }
+  .paper-card:hover { transform: translateY(-3px); border-color: var(--blue-light); }
+  .paper-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+  .paper-info h4 { font-family: 'Sora', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--dark); }
+  .paper-info span { font-size: 0.8rem; color: var(--muted); }
+  .paper-dl { margin-left: auto; color: var(--blue); font-size: 1.1rem; }
+  .paper-del-btn { display: none; background: #ffebee; color: var(--dev-red); border: none; border-radius: 8px; padding: 5px 9px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-left: 6px; transition: all 0.2s; }
+  .paper-del-btn:hover { background: var(--dev-red); color: white; }
+  .dev-mode .paper-del-btn { display: block; }
+
+  /* NAVIGATION */
+  .map-container { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.15); margin-bottom: 24px; }
+  .map-placeholder { height: 320px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; position: relative; overflow: hidden; }
+  .map-placeholder::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(33,150,243,0.08) 0%, transparent 70%); }
+  .map-emoji { font-size: 3.5rem; }
+  .map-placeholder h3 { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--blue); font-size: 1.1rem; }
+  .map-placeholder p { color: var(--muted); font-size: 0.88rem; }
+  .map-open-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; border: none; border-radius: 12px; padding: 12px 28px; font-size: 0.95rem; font-weight: 600; font-family: 'Sora', sans-serif; cursor: pointer; text-decoration: none; margin-top: 8px; box-shadow: 0 4px 20px rgba(21,101,192,0.25); transition: transform 0.2s, box-shadow 0.2s; }
+  .map-open-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(21,101,192,0.35); }
+  .locations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .loc-card { background: var(--card-bg); border-radius: 14px; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.12); text-align: center; transition: all 0.2s; cursor: pointer; padding: 0; overflow: hidden; position: relative; }
+  .loc-card:hover { border-color: var(--blue-light); transform: translateY(-2px); }
+  .loc-card .loc-icon { font-size: 1.4rem; margin-bottom: 4px; }
+  .loc-card h4 { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--dark); }
+  .loc-card p { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .loc-img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px 10px 0 0; display: block; }
+  .loc-body { padding: 12px 14px 14px; }
+  .loc-del-btn { display: none; position: absolute; top: 8px; right: 8px; background: rgba(198,40,40,0.85); color: white; border: none; border-radius: 6px; padding: 3px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+  .dev-mode .loc-del-btn { display: block; }
+
+  /* HELPLINE */
+  .helpline-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px; }
+  .helpline-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 24px; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.12); transition: all 0.25s; position: relative; }
+  .helpline-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(21,101,192,0.15); }
+  .helpline-icon { font-size: 2rem; margin-bottom: 14px; }
+  .helpline-card h3 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; color: var(--dark); margin-bottom: 6px; }
+  .helpline-card .hnum { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--blue); margin: 8px 0 4px; }
+  .helpline-card p { font-size: 0.82rem; color: var(--muted); }
+  .call-btn { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; border: none; border-radius: 10px; padding: 9px 20px; font-size: 0.83rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; }
+  .hcard-del-btn { display: none; position: absolute; top: 12px; right: 12px; background: #ffebee; color: var(--dev-red); border: none; border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .hcard-del-btn:hover { background: var(--dev-red); color: white; }
+  .dev-mode .hcard-del-btn { display: block; }
+
+  /* CONTACT FORM */
+  .contact-form { background: var(--card-bg); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow); border: 1.5px solid rgba(66,165,245,0.12); max-width: 560px; margin: 0 auto; }
+  .contact-form h3 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; border: 1.5px solid rgba(66,165,245,0.25); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text); background: white; outline: none; transition: border 0.2s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue-light); }
+  .form-group textarea { min-height: 100px; resize: vertical; }
+  .submit-btn { width: 100%; background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(21,101,192,0.25); transition: transform 0.2s; }
+  .submit-btn:hover { transform: translateY(-2px); }
+  .success-msg { display: none; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 10px; padding: 14px 18px; color: #2e7d32; font-weight: 600; font-size: 0.9rem; margin-top: 14px; text-align: center; }
+
+  /* ADD SECTIONS (dev only) */
+  .add-section { background: var(--card-bg); border-radius: var(--radius); padding: 28px 28px 24px; box-shadow: var(--shadow); border: 2px dashed rgba(198,40,40,0.3); margin-top: 36px; display: none; }
+  .dev-mode .add-section { display: block; }
+  .add-section h3 { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .dev-badge { background: var(--dev-red); color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 6px; font-weight: 700; letter-spacing: 0.5px; vertical-align: middle; }
+  .add-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:600px){ .add-form-grid { grid-template-columns: 1fr; } }
+  .add-form-grid .full { grid-column: 1/-1; }
+  .add-form-grid label { display: block; font-size: 0.83rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+  .add-form-grid input, .add-form-grid select { width: 100%; padding: 10px 13px; border: 1.5px solid rgba(66,165,245,0.25); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text); background: white; outline: none; transition: border 0.2s; }
+  .add-form-grid input:focus, .add-form-grid select:focus { border-color: var(--blue-light); }
+  .add-btn { margin-top: 16px; background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; border: none; border-radius: 12px; padding: 12px 28px; font-size: 0.95rem; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; box-shadow: 0 4px 20px rgba(21,101,192,0.22); transition: transform 0.2s; }
+  .add-btn:hover { transform: translateY(-2px); }
+  .add-success { display: none; margin-top: 12px; background: #e8f5e9; border: 1.5px solid #a5d6a7; border-radius: 10px; padding: 12px 16px; color: #2e7d32; font-weight: 600; font-size: 0.88rem; text-align: center; }
+
+  /* DEV BANNER */
+  .dev-banner { display: none; background: linear-gradient(90deg, var(--dev-red), var(--dev-red-light)); color: white; text-align: center; padding: 8px 16px; font-size: 0.82rem; font-weight: 600; font-family: 'Sora', sans-serif; letter-spacing: 0.5px; }
+  .dev-mode-active .dev-banner { display: block; }
+
+  /* DEV LOGIN MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,27,62,0.55); backdrop-filter: blur(6px); z-index: 999; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: white; border-radius: 24px; padding: 40px 36px; width: 360px; box-shadow: 0 24px 80px rgba(13,27,62,0.25); animation: fadeIn 0.3s ease; }
+  .modal-box h2 { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+  .modal-box .modal-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+  .modal-box label { display: block; font-size: 0.83rem; font-weight: 600; color: var(--text); margin-bottom: 6px; margin-top: 14px; }
+  .modal-box input { width: 100%; padding: 11px 14px; border: 1.5px solid rgba(66,165,245,0.3); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; outline: none; transition: border 0.2s; }
+  .modal-box input:focus { border-color: var(--blue); }
+  .modal-login-btn { width: 100%; margin-top: 22px; background: linear-gradient(135deg, var(--dev-red), var(--dev-red-light)); color: white; border: none; border-radius: 12px; padding: 13px; font-size: 0.97rem; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; transition: opacity 0.2s; }
+  .modal-login-btn:hover { opacity: 0.88; }
+  .modal-cancel-btn { width: 100%; margin-top: 10px; background: none; color: var(--muted); border: none; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 6px; }
+  .modal-cancel-btn:hover { color: var(--text); }
+  .modal-error { display: none; background: #ffebee; border-radius: 8px; padding: 10px 14px; color: var(--dev-red); font-size: 0.84rem; font-weight: 600; margin-top: 14px; text-align: center; }
+
+  /* EDIT MODAL */
+  .edit-modal-box { background: white; border-radius: 24px; padding: 36px 32px; width: 400px; box-shadow: 0 24px 80px rgba(13,27,62,0.25); animation: fadeIn 0.3s ease; max-height: 90vh; overflow-y: auto; }
+  .edit-modal-box h2 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+  .edit-modal-box label { display: block; font-size: 0.83rem; font-weight: 600; color: var(--text); margin-bottom: 5px; margin-top: 12px; }
+  .edit-modal-box input, .edit-modal-box select, .edit-modal-box textarea { width: 100%; padding: 10px 13px; border: 1.5px solid rgba(66,165,245,0.25); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text); background: white; outline: none; }
+  .edit-modal-box textarea { min-height: 70px; resize: vertical; }
+  .edit-save-btn { width: 100%; margin-top: 20px; background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; border: none; border-radius: 12px; padding: 12px; font-size: 0.95rem; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; }
+  .edit-cancel-btn { width: 100%; margin-top: 8px; background: none; color: var(--muted); border: none; font-size: 0.88rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 6px; }
+
+  /* BLOBS */
+  .blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.25; pointer-events: none; z-index: -1; }
+  .blob1 { width: 400px; height: 400px; background: var(--blue); top: -100px; right: -100px; }
+  .blob2 { width: 300px; height: 300px; background: var(--sky); bottom: 0; left: -80px; }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 12px; }
+    .nav-links button { padding: 6px 10px; font-size: 0.8rem; }
+    .hero { padding: 40px 16px 32px; }
+    .section-wrap { padding: 24px 14px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- DEV BANNER -->
+<div class="dev-banner" id="devBanner">🔧 Developer Mode Active — Edit controls are visible. Changes are session-only.</div>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-icon">🎓</div>
+    Harsha
+  </div>
+  <div class="nav-links">
+    <button class="active" onclick="showPage('home', this)">Home</button>
+    <button onclick="showPage('faculty', this)">Faculty</button>
+    <button onclick="showPage('papers', this)">Papers</button>
+    <button onclick="showPage('navigation', this)">Navigate</button>
+    <button onclick="showPage('helpline', this)">Helpline</button>
+    <button class="dev-login-btn" id="devBtn" onclick="openDevModal()">🔧 Dev</button>
+  </div>
+</nav>
+
+<!-- DEV LOGIN MODAL -->
+<div class="modal-overlay" id="devModal">
+  <div class="modal-box">
+    <h2>🔒 Developer Login</h2>
+    <p class="modal-sub">This area is restricted to authorized developers only.</p>
+    <label>Username</label>
+    <input type="text" id="devUser" placeholder="Enter username" autocomplete="off">
+    <label>Password</label>
+    <input type="password" id="devPass" placeholder="Enter password">
+    <div class="modal-error" id="devError">❌ Invalid credentials. Access denied.</div>
+    <button class="modal-login-btn" onclick="devLogin()">Login →</button>
+    <button class="modal-cancel-btn" onclick="closeDevModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL (shared) -->
+<div class="modal-overlay" id="editModal">
+  <div class="edit-modal-box">
+    <h2 id="editModalTitle">✏️ Edit</h2>
+    <div id="editModalBody"></div>
+    <button class="edit-save-btn" onclick="saveEdit()">Save Changes</button>
+    <button class="edit-cancel-btn" onclick="closeEditModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">🏫 Your College Companion</div>
+    <h1>Everything you need,<br><span>all in one place</span></h1>
+    <p>Find faculty, access question papers, navigate campus, and get helpline support — instantly, from any device.</p>
+    <div class="hero-cards">
+      <div class="hero-card" onclick="showPage('faculty', document.querySelectorAll('.nav-links button')[1])">
+        <div class="card-icon" style="background:linear-gradient(135deg,#e3f2fd,#90caf9)">👨‍🏫</div>
+        <h3>Faculty Info</h3>
+        <p>Find teachers & contact them</p>
+      </div>
+      <div class="hero-card" onclick="showPage('papers', document.querySelectorAll('.nav-links button')[2])">
+        <div class="card-icon" style="background:linear-gradient(135deg,#fff3e0,#ffcc80)">📄</div>
+        <h3>Question Papers</h3>
+        <p>Previous year papers by semester</p>
+      </div>
+      <div class="hero-card" onclick="showPage('navigation', document.querySelectorAll('.nav-links button')[3])">
+        <div class="card-icon" style="background:linear-gradient(135deg,#e8f5e9,#a5d6a7)">🗺️</div>
+        <h3>Campus Map</h3>
+        <p>Navigate to any campus spot</p>
+      </div>
+      <div class="hero-card" onclick="showPage('helpline', document.querySelectorAll('.nav-links button')[4])">
+        <div class="card-icon" style="background:linear-gradient(135deg,#fce4ec,#f48fb1)">📞</div>
+        <h3>Helpline</h3>
+        <p>Get support & raise queries</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FACULTY -->
+<div id="faculty" class="page">
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>👨‍🏫 Faculty Directory</h2>
+      <p>Find faculty members, their subjects, and contact information</p>
+    </div>
+    <div class="faculty-grid" id="facultyGrid">
+      <div class="faculty-card" data-id="f1" data-name="Dr. Ramesh Kumar" data-subject="Computer Science" data-qual="M.Tech, Ph.D — CSE" data-room="Department Block A, Room 102" data-hours="Mon–Fri, 9AM–4PM" data-email="ramesh.k@college.edu" data-phone="+91 98765 43210" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">RK</div>
+        <h3>Dr. Ramesh Kumar</h3>
+        <div class="subject">Computer Science</div>
+        <div class="meta">📚 M.Tech, Ph.D — CSE<br>🏢 Department Block A, Room 102<br>📅 Mon–Fri, 9AM–4PM</div>
+        <button class="contact-btn" onclick="alert('📧 ramesh.k@college.edu\n📞 +91 98765 43210')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+      <div class="faculty-card" data-id="f2" data-name="Prof. Priya Sharma" data-subject="Mathematics" data-qual="M.Sc, M.Phil — Mathematics" data-room="Science Block, Room 205" data-hours="Mon–Sat, 9AM–3PM" data-email="priya.s@college.edu" data-phone="+91 98765 11111" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">PS</div>
+        <h3>Prof. Priya Sharma</h3>
+        <div class="subject">Mathematics</div>
+        <div class="meta">📚 M.Sc, M.Phil — Mathematics<br>🏢 Science Block, Room 205<br>📅 Mon–Sat, 9AM–3PM</div>
+        <button class="contact-btn" onclick="alert('📧 priya.s@college.edu\n📞 +91 98765 11111')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+      <div class="faculty-card" data-id="f3" data-name="Mr. Arun Varma" data-subject="Electronics" data-qual="B.Tech, M.Tech — ECE" data-room="ECE Block, Room 301" data-hours="Mon–Fri, 10AM–5PM" data-email="arun.v@college.edu" data-phone="+91 98765 22222" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">AV</div>
+        <h3>Mr. Arun Varma</h3>
+        <div class="subject">Electronics</div>
+        <div class="meta">📚 B.Tech, M.Tech — ECE<br>🏢 ECE Block, Room 301<br>📅 Mon–Fri, 10AM–5PM</div>
+        <button class="contact-btn" onclick="alert('📧 arun.v@college.edu\n📞 +91 98765 22222')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+      <div class="faculty-card" data-id="f4" data-name="Dr. Sunita Menon" data-subject="Physics" data-qual="M.Sc, Ph.D — Physics" data-room="Physics Lab Block, Room 110" data-hours="Mon–Fri, 9AM–4PM" data-email="sunita.m@college.edu" data-phone="+91 98765 33333" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">SM</div>
+        <h3>Dr. Sunita Menon</h3>
+        <div class="subject">Physics</div>
+        <div class="meta">📚 M.Sc, Ph.D — Physics<br>🏢 Physics Lab Block, Room 110<br>📅 Mon–Fri, 9AM–4PM</div>
+        <button class="contact-btn" onclick="alert('📧 sunita.m@college.edu\n📞 +91 98765 33333')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+      <div class="faculty-card" data-id="f5" data-name="Prof. Biju Nair" data-subject="English & Communication" data-qual="MA, M.Phil — English" data-room="Humanities Block, Room 404" data-hours="Tue–Sat, 9AM–3PM" data-email="biju.n@college.edu" data-phone="+91 98765 44444" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">BN</div>
+        <h3>Prof. Biju Nair</h3>
+        <div class="subject">English &amp; Communication</div>
+        <div class="meta">📚 MA, M.Phil — English<br>🏢 Humanities Block, Room 404<br>📅 Tue–Sat, 9AM–3PM</div>
+        <button class="contact-btn" onclick="alert('📧 biju.n@college.edu\n📞 +91 98765 44444')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+      <div class="faculty-card" data-id="f6" data-name="Dr. Latha Joseph" data-subject="Civil Engineering" data-qual="B.Tech, Ph.D — Civil" data-room="Civil Dept, Room 201" data-hours="Mon–Fri, 10AM–4PM" data-email="latha.j@college.edu" data-phone="+91 98765 55555" data-img="">
+        <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'), 'faculty')">✕ Delete</button>
+        <div class="faculty-avatar">LJ</div>
+        <h3>Dr. Latha Joseph</h3>
+        <div class="subject">Civil Engineering</div>
+        <div class="meta">📚 B.Tech, Ph.D — Civil<br>🏢 Civil Dept, Room 201<br>📅 Mon–Fri, 10AM–4PM</div>
+        <button class="contact-btn" onclick="alert('📧 latha.j@college.edu\n📞 +91 98765 55555')">Contact Info</button>
+        <div class="dev-edit-row">
+          <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+          <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD FACULTY (dev only) -->
+    <div class="add-section" id="addFacSection">
+      <h3>➕ Add New Faculty <span class="dev-badge">DEV ONLY</span></h3>
+      <div class="add-form-grid">
+        <div><label>Full Name</label><input type="text" id="fac-name" placeholder="e.g. Dr. Anitha Rao"></div>
+        <div><label>Designation</label>
+          <select id="fac-desg">
+            <option value="">-- Select --</option>
+            <option>Professor</option><option>Associate Professor</option>
+            <option>Assistant Professor</option><option>HOD</option><option>Lecturer</option>
+          </select>
+        </div>
+        <div><label>Subject / Department</label><input type="text" id="fac-subject" placeholder="e.g. Data Structures"></div>
+        <div><label>Qualification</label><input type="text" id="fac-qual" placeholder="e.g. M.Tech, Ph.D — CSE"></div>
+        <div><label>Room / Office</label><input type="text" id="fac-room" placeholder="e.g. CSE Block, Room 104"></div>
+        <div><label>Available Hours</label><input type="text" id="fac-hours" placeholder="e.g. Mon–Fri, 9AM–4PM"></div>
+        <div><label>Email</label><input type="email" id="fac-email" placeholder="e.g. anitha@college.edu"></div>
+        <div><label>Phone</label><input type="text" id="fac-phone" placeholder="e.g. +91 98765 66666"></div>
+        <div class="full"><label>Photo (URL or leave blank)</label><input type="text" id="fac-img" placeholder="https://... or leave blank for initials avatar"></div>
+      </div>
+      <button class="add-btn" onclick="addFaculty()">Add Faculty →</button>
+      <div class="add-success" id="facSuccess">✅ Faculty added successfully!</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAPERS -->
+<div id="papers" class="page">
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>📄 Previous Year Papers</h2>
+      <p>Browse and download question papers by semester</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterPapers('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPapers('s1', this)">Sem 1</button>
+      <button class="filter-btn" onclick="filterPapers('s2', this)">Sem 2</button>
+      <button class="filter-btn" onclick="filterPapers('s3', this)">Sem 3</button>
+      <button class="filter-btn" onclick="filterPapers('s4', this)">Sem 4</button>
+      <button class="filter-btn" onclick="filterPapers('s5', this)">Sem 5</button>
+      <button class="filter-btn" onclick="filterPapers('s6', this)">Sem 6</button>
+    </div>
+    <div class="papers-grid" id="papersGrid">
+      <div class="paper-card" data-sem="s1" onclick="alert('📥 Downloading: Engineering Mathematics S1 2023...')"><div class="paper-icon">📐</div><div class="paper-info"><h4>Engineering Mathematics</h4><span>Sem 1 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s1" onclick="alert('📥 Downloading: Engineering Physics S1 2023...')"><div class="paper-icon">⚛️</div><div class="paper-info"><h4>Engineering Physics</h4><span>Sem 1 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s2" onclick="alert('📥 Downloading: Programming in C S2 2023...')"><div class="paper-icon">💻</div><div class="paper-info"><h4>Programming in C</h4><span>Sem 2 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s2" onclick="alert('📥 Downloading: Engineering Chemistry S2 2023...')"><div class="paper-icon">🧪</div><div class="paper-info"><h4>Engineering Chemistry</h4><span>Sem 2 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s3" onclick="alert('📥 Downloading: Data Structures S3 2023...')"><div class="paper-icon">🗂️</div><div class="paper-info"><h4>Data Structures</h4><span>Sem 3 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s3" onclick="alert('📥 Downloading: Digital Electronics S3 2023...')"><div class="paper-icon">🔌</div><div class="paper-info"><h4>Digital Electronics</h4><span>Sem 3 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s4" onclick="alert('📥 Downloading: DBMS S4 2023...')"><div class="paper-icon">🗃️</div><div class="paper-info"><h4>Database Management</h4><span>Sem 4 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s4" onclick="alert('📥 Downloading: Operating Systems S4 2022...')"><div class="paper-icon">🖥️</div><div class="paper-info"><h4>Operating Systems</h4><span>Sem 4 • 2022</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s5" onclick="alert('📥 Downloading: Computer Networks S5 2023...')"><div class="paper-icon">🌐</div><div class="paper-info"><h4>Computer Networks</h4><span>Sem 5 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s5" onclick="alert('📥 Downloading: Software Engineering S5 2022...')"><div class="paper-icon">⚙️</div><div class="paper-info"><h4>Software Engineering</h4><span>Sem 5 • 2022</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s6" onclick="alert('📥 Downloading: Machine Learning S6 2023...')"><div class="paper-icon">🤖</div><div class="paper-info"><h4>Machine Learning</h4><span>Sem 6 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+      <div class="paper-card" data-sem="s6" onclick="alert('📥 Downloading: Web Technologies S6 2023...')"><div class="paper-icon">🕸️</div><div class="paper-info"><h4>Web Technologies</h4><span>Sem 6 • 2023</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button></div>
+    </div>
+    <!-- ADD PAPER (dev only) -->
+    <div class="add-section" id="addPaperSection">
+      <h3>➕ Add Question Paper <span class="dev-badge">DEV ONLY</span></h3>
+      <div class="add-form-grid">
+        <div><label>Subject Name</label><input type="text" id="p-subject" placeholder="e.g. Artificial Intelligence"></div>
+        <div><label>Semester</label>
+          <select id="p-sem">
+            <option value="">-- Select --</option>
+            <option value="s1">Semester 1</option><option value="s2">Semester 2</option>
+            <option value="s3">Semester 3</option><option value="s4">Semester 4</option>
+            <option value="s5">Semester 5</option><option value="s6">Semester 6</option>
+          </select>
+        </div>
+        <div><label>Year</label><input type="text" id="p-year" placeholder="e.g. 2024"></div>
+        <div><label>Exam Type</label>
+          <select id="p-type">
+            <option value="">-- Select --</option>
+            <option>End Semester</option><option>Mid Semester</option>
+            <option>Internal</option><option>Supplementary</option>
+          </select>
+        </div>
+        <div class="full"><label>Paper File / Link (URL)</label><input type="text" id="p-link" placeholder="e.g. https://drive.google.com/..."></div>
+      </div>
+      <button class="add-btn" onclick="addPaper()">Add Paper →</button>
+      <div class="add-success" id="paperSuccess">✅ Question paper added successfully!</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div id="navigation" class="page">
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>🗺️ Campus Navigation</h2>
+      <p>Find your way around campus — buildings, labs, and facilities</p>
+    </div>
+    <div class="map-container">
+      <div class="map-placeholder">
+        <div class="map-emoji">🗺️</div>
+        <h3>Campus Map — Interactive</h3>
+        <p>Click below to open Google Maps for live navigation</p>
+        <a class="map-open-btn" href="https://maps.google.com" target="_blank">📍 Open Google Maps</a>
+      </div>
+    </div>
+    <div class="section-header" style="margin-top:32px"><h2 style="font-size:1.2rem">🏛️ Key Locations</h2></div>
+    <div class="locations-grid" id="locGrid">
+      <div class="loc-card" onclick="alert('📍 Main Building: College Entrance, Ground Floor')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1562774053-701939374585?w=400&q=80" alt="Main Building" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">🏛️</div><h4>Main Building</h4><p>Admin &amp; Principal Office</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Library: Block B, 1st Floor')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&q=80" alt="Library" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">📚</div><h4>Library</h4><p>Books &amp; Digital Resources</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Computer Lab: CSE Block, 2nd Floor')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1581092334247-ddef2a41a869?w=400&q=80" alt="Computer Lab" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">💻</div><h4>Computer Lab</h4><p>CSE Department Block</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Canteen: Ground Floor, South Wing')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=400&q=80" alt="Canteen" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">🍽️</div><h4>Canteen</h4><p>Ground Floor, South Wing</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Auditorium: Main Building, Ground Floor')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80" alt="Auditorium" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">🎭</div><h4>Auditorium</h4><p>Main Building, Ground Floor</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Sports Ground: Behind Hostel Block')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80" alt="Sports Ground" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">⚽</div><h4>Sports Ground</h4><p>Behind Hostel Block</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Medical Room: Admin Block, Room 005')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&q=80" alt="Medical Room" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">🏥</div><h4>Medical Room</h4><p>Admin Block, Ground Floor</p></div></div>
+      <div class="loc-card" onclick="alert('📍 Parking: West Gate Entrance')"><button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button><img class="loc-img" src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400&q=80" alt="Parking" onerror="this.style.display='none'"><div class="loc-body"><div class="loc-icon">🚗</div><h4>Parking</h4><p>West Gate Entrance</p></div></div>
+    </div>
+    <!-- ADD LOCATION (dev only) -->
+    <div class="add-section" id="addLocSection">
+      <h3>➕ Add Location <span class="dev-badge">DEV ONLY</span></h3>
+      <div class="add-form-grid">
+        <div><label>Location Name</label><input type="text" id="loc-name" placeholder="e.g. Workshop Block"></div>
+        <div><label>Icon (emoji)</label><input type="text" id="loc-icon-inp" placeholder="e.g. 🔧"></div>
+        <div class="full"><label>Description</label><input type="text" id="loc-desc" placeholder="e.g. Mechanical Dept, 1st Floor"></div>
+        <div class="full"><label>Image URL</label><input type="text" id="loc-img-inp" placeholder="https://images.unsplash.com/..."></div>
+        <div class="full"><label>Map Info (shown on click)</label><input type="text" id="loc-map" placeholder="e.g. Mechanical Block, Building C"></div>
+      </div>
+      <button class="add-btn" onclick="addLocation()">Add Location →</button>
+      <div class="add-success" id="locSuccess">✅ Location added!</div>
+    </div>
+  </div>
+</div>
+
+<!-- HELPLINE -->
+<div id="helpline" class="page">
+  <div class="section-wrap">
+    <div class="section-header">
+      <h2>📞 College Helpline</h2>
+      <p>Get support, raise queries, and connect with the right department</p>
+    </div>
+    <div class="helpline-grid" id="helplineGrid">
+      <div class="helpline-card" data-name="Principal's Office" data-num="+91 98765 00001" data-desc="General enquiries, complaints, and official matters" data-icon="🏫">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">🏫</div>
+        <h3>Principal's Office</h3>
+        <div class="hnum">+91 98765 00001</div>
+        <p>General enquiries, complaints, and official matters</p>
+        <a class="call-btn" href="tel:+919876500001">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+      <div class="helpline-card" data-name="Admission Office" data-num="+91 98765 00002" data-desc="New admissions, document verification, and fee details" data-icon="📝">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">📝</div>
+        <h3>Admission Office</h3>
+        <div class="hnum">+91 98765 00002</div>
+        <p>New admissions, document verification, and fee details</p>
+        <a class="call-btn" href="tel:+919876500002">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+      <div class="helpline-card" data-name="Exam Department" data-num="+91 98765 00003" data-desc="Exam schedules, results, hall tickets, and certificates" data-icon="🎓">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">🎓</div>
+        <h3>Exam Department</h3>
+        <div class="hnum">+91 98765 00003</div>
+        <p>Exam schedules, results, hall tickets, and certificates</p>
+        <a class="call-btn" href="tel:+919876500003">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+      <div class="helpline-card" data-name="Accounts / Finance" data-num="+91 98765 00004" data-desc="Fee payment, scholarships, and financial assistance" data-icon="💰">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">💰</div>
+        <h3>Accounts / Finance</h3>
+        <div class="hnum">+91 98765 00004</div>
+        <p>Fee payment, scholarships, and financial assistance</p>
+        <a class="call-btn" href="tel:+919876500004">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+      <div class="helpline-card" data-name="Hostel Warden" data-num="+91 98765 00005" data-desc="Hostel rooms, facilities, and resident student support" data-icon="🏠">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">🏠</div>
+        <h3>Hostel Warden</h3>
+        <div class="hnum">+91 98765 00005</div>
+        <p>Hostel rooms, facilities, and resident student support</p>
+        <a class="call-btn" href="tel:+919876500005">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+      <div class="helpline-card" data-name="Emergency / Security" data-num="+91 98765 00006" data-desc="Campus security, emergency assistance, 24×7 support" data-icon="🆘">
+        <button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button>
+        <div class="helpline-icon">🆘</div>
+        <h3>Emergency / Security</h3>
+        <div class="hnum">+91 98765 00006</div>
+        <p>Campus security, emergency assistance, 24×7 support</p>
+        <a class="call-btn" href="tel:+919876500006">📞 Call Now</a>
+        <div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>
+      </div>
+    </div>
+
+    <!-- ADD HELPLINE (dev only) -->
+    <div class="add-section" id="addHelpSection">
+      <h3>➕ Add Helpline Contact <span class="dev-badge">DEV ONLY</span></h3>
+      <div class="add-form-grid">
+        <div><label>Department Name</label><input type="text" id="h-name" placeholder="e.g. Transport Office"></div>
+        <div><label>Icon (emoji)</label><input type="text" id="h-icon" placeholder="e.g. 🚌"></div>
+        <div><label>Phone Number</label><input type="text" id="h-num" placeholder="e.g. +91 98765 00007"></div>
+        <div class="full"><label>Description</label><input type="text" id="h-desc" placeholder="e.g. College bus schedules and routes"></div>
+      </div>
+      <button class="add-btn" onclick="addHelpline()">Add Contact →</button>
+      <div class="add-success" id="helpSuccess">✅ Helpline contact added!</div>
+    </div>
+
+    <!-- QUERY FORM -->
+    <div class="contact-form" style="margin-top:32px">
+      <h3>✉️ Submit a Query</h3>
+      <div class="form-group"><label>Your Name</label><input type="text" id="f-name" placeholder="e.g. Arundas K"></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="f-email" placeholder="e.g. arundas@email.com"></div>
+      <div class="form-group"><label>Department / Query Type</label>
+        <select id="f-dept">
+          <option value="">-- Select --</option>
+          <option>Admission</option><option>Exam &amp; Results</option>
+          <option>Fee &amp; Scholarship</option><option>Faculty / Academic</option>
+          <option>Hostel</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Your Message</label><textarea id="f-msg" placeholder="Describe your query or issue..."></textarea></div>
+      <button class="submit-btn" onclick="submitForm()">Submit Query →</button>
+      <div class="success-msg" id="successMsg">✅ Query submitted! We'll get back to you within 24 hours.</div>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN FILE INPUT FOR IMAGE UPLOAD -->
+<input type="file" id="imgUploader" accept="image/*" style="display:none">
+
+<script>
+  // ── CREDENTIALS (change here to set your dev password) ──
+  const DEV_USER = 'harsha';
+  const DEV_PASS = 'dev@2025';
+
+  let devMode = false;
+  let currentEditCard = null;
+  let currentEditType = null;
+  let imgTargetCard = null;
+
+  // ── PAGE NAVIGATION ──
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  function filterPapers(sem, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.paper-card').forEach(card => {
+      card.style.display = (sem === 'all' || card.dataset.sem === sem) ? 'flex' : 'none';
+    });
+  }
+
+  // ── DEV LOGIN ──
+  function openDevModal() {
+    if (devMode) { devLogout(); return; }
+    document.getElementById('devModal').classList.add('open');
+    document.getElementById('devUser').value = '';
+    document.getElementById('devPass').value = '';
+    document.getElementById('devError').style.display = 'none';
+    setTimeout(() => document.getElementById('devUser').focus(), 100);
+  }
+  function closeDevModal() {
+    document.getElementById('devModal').classList.remove('open');
+  }
+  function devLogin() {
+    const u = document.getElementById('devUser').value.trim();
+    const p = document.getElementById('devPass').value;
+    if (u === DEV_USER && p === DEV_PASS) {
+      devMode = true;
+      document.body.classList.add('dev-mode');
+      document.getElementById('devBanner').parentElement.classList.add('dev-mode-active');
+      document.getElementById('devBanner').style.display = 'block';
+      document.getElementById('devBtn').classList.add('logged-in');
+      document.getElementById('devBtn').textContent = '🔓 Dev (Logout)';
+      closeDevModal();
+    } else {
+      document.getElementById('devError').style.display = 'block';
+    }
+  }
+  function devLogout() {
+    if (!confirm('Logout from developer mode?')) return;
+    devMode = false;
+    document.body.classList.remove('dev-mode');
+    document.getElementById('devBanner').style.display = 'none';
+    document.getElementById('devBtn').classList.remove('logged-in');
+    document.getElementById('devBtn').textContent = '🔧 Dev';
+  }
+
+  // Allow Enter key in modal
+  document.getElementById('devPass').addEventListener('keydown', e => { if (e.key === 'Enter') devLogin(); });
+  document.getElementById('devUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('devPass').focus(); });
+
+  // ── DELETE ──
+  function deleteCard(card, type) {
+    const labels = {faculty:'faculty member', paper:'question paper', loc:'location', helpline:'helpline contact'};
+    if (confirm(`Delete this ${labels[type] || 'item'}?`)) card.remove();
+  }
+
+  // ── ADD FACULTY ──
+  function addFaculty() {
+    const name = document.getElementById('fac-name').value.trim();
+    const desg = document.getElementById('fac-desg').value;
+    const subject = document.getElementById('fac-subject').value.trim();
+    const qual = document.getElementById('fac-qual').value.trim();
+    const room = document.getElementById('fac-room').value.trim();
+    const hours = document.getElementById('fac-hours').value.trim();
+    const email = document.getElementById('fac-email').value.trim();
+    const phone = document.getElementById('fac-phone').value.trim();
+    const img = document.getElementById('fac-img').value.trim();
+    if (!name || !desg || !subject) { alert('Please fill Name, Designation, and Subject.'); return; }
+    const initials = name.split(' ').filter(w => w.match(/[A-Za-z]/)).map(w => w[0].toUpperCase()).slice(0,2).join('');
+    const card = document.createElement('div');
+    card.className = 'faculty-card';
+    card.dataset.name = name; card.dataset.subject = subject; card.dataset.qual = qual;
+    card.dataset.room = room; card.dataset.hours = hours; card.dataset.email = email; card.dataset.phone = phone;
+    const avatarHTML = img
+      ? `<img src="${img}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:16px;" onerror="this.outerHTML='<div class=\\'faculty-avatar\\'>${initials}</div>'">`
+      : `<div class="faculty-avatar">${initials}</div>`;
+    card.innerHTML = `
+      <button class="dev-delete-btn" onclick="deleteCard(this.closest('.faculty-card'),'faculty')">✕ Delete</button>
+      ${avatarHTML}
+      <h3>${name}</h3>
+      <div class="subject">${subject}</div>
+      <div class="meta">${qual?'📚 '+qual+'<br>':''}${room?'🏢 '+room+'<br>':''}${hours?'📅 '+hours:''}</div>
+      <button class="contact-btn" onclick="alert('📧 ${email||'N/A'}\\n📞 ${phone||'N/A'}')">Contact Info</button>
+      <div class="dev-edit-row">
+        <button class="edit-mini-btn" onclick="openFacultyEdit(this.closest('.faculty-card'))">✏️ Edit Details</button>
+        <button class="edit-mini-btn" onclick="uploadFacultyImg(this.closest('.faculty-card'))">🖼️ Change Image</button>
+      </div>`;
+    document.getElementById('facultyGrid').appendChild(card);
+    ['fac-name','fac-desg','fac-subject','fac-qual','fac-room','fac-hours','fac-email','fac-phone','fac-img'].forEach(id => document.getElementById(id).value = '');
+    const s = document.getElementById('facSuccess'); s.style.display='block'; setTimeout(()=>s.style.display='none',3500);
+  }
+
+  // ── ADD PAPER ──
+  const paperEmojis = {s1:'📐',s2:'💻',s3:'🗂️',s4:'🗃️',s5:'🌐',s6:'🤖'};
+  function addPaper() {
+    const subject = document.getElementById('p-subject').value.trim();
+    const sem = document.getElementById('p-sem').value;
+    const year = document.getElementById('p-year').value.trim();
+    const type = document.getElementById('p-type').value;
+    const link = document.getElementById('p-link').value.trim();
+    if (!subject || !sem || !year) { alert('Please fill Subject, Semester, and Year.'); return; }
+    const semLabel = sem.replace('s','Sem ');
+    const icon = paperEmojis[sem] || '📄';
+    const card = document.createElement('div');
+    card.className = 'paper-card'; card.dataset.sem = sem;
+    card.onclick = () => { if (link) window.open(link,'_blank'); else alert(`📥 ${subject} ${semLabel} ${year}`); };
+    card.innerHTML = `<div class="paper-icon">${icon}</div><div class="paper-info"><h4>${subject}${type?' ('+type+')':''}</h4><span>${semLabel} • ${year}</span></div><span class="paper-dl">⬇️</span><button class="paper-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.paper-card'),'paper')">✕</button>`;
+    document.getElementById('papersGrid').appendChild(card);
+    ['p-subject','p-sem','p-year','p-type','p-link'].forEach(id => document.getElementById(id).value='');
+    const s = document.getElementById('paperSuccess'); s.style.display='block'; setTimeout(()=>s.style.display='none',3500);
+  }
+
+  // ── ADD LOCATION ──
+  function addLocation() {
+    const name = document.getElementById('loc-name').value.trim();
+    const icon = document.getElementById('loc-icon-inp').value.trim() || '📍';
+    const desc = document.getElementById('loc-desc').value.trim();
+    const imgUrl = document.getElementById('loc-img-inp').value.trim();
+    const mapInfo = document.getElementById('loc-map').value.trim();
+    if (!name) { alert('Please enter a location name.'); return; }
+    const card = document.createElement('div');
+    card.className = 'loc-card';
+    card.onclick = () => alert(`📍 ${name}: ${mapInfo || desc}`);
+    card.innerHTML = `<button class="loc-del-btn" onclick="event.stopPropagation();deleteCard(this.closest('.loc-card'),'loc')">✕ Del</button>${imgUrl?`<img class="loc-img" src="${imgUrl}" alt="${name}" onerror="this.style.display='none'">`:''}<div class="loc-body"><div class="loc-icon">${icon}</div><h4>${name}</h4><p>${desc}</p></div>`;
+    document.getElementById('locGrid').appendChild(card);
+    ['loc-name','loc-icon-inp','loc-desc','loc-img-inp','loc-map'].forEach(id => document.getElementById(id).value='');
+    const s = document.getElementById('locSuccess'); s.style.display='block'; setTimeout(()=>s.style.display='none',3000);
+  }
+
+  // ── ADD HELPLINE ──
+  function addHelpline() {
+    const name = document.getElementById('h-name').value.trim();
+    const icon = document.getElementById('h-icon').value.trim() || '📞';
+    const num = document.getElementById('h-num').value.trim();
+    const desc = document.getElementById('h-desc').value.trim();
+    if (!name || !num) { alert('Please fill Department Name and Phone Number.'); return; }
+    const clean = num.replace(/\D/g,'');
+    const card = document.createElement('div');
+    card.className = 'helpline-card';
+    card.dataset.name = name; card.dataset.num = num; card.dataset.desc = desc; card.dataset.icon = icon;
+    card.innerHTML = `<button class="hcard-del-btn" onclick="deleteCard(this.closest('.helpline-card'),'helpline')">✕ Delete</button><div class="helpline-icon">${icon}</div><h3>${name}</h3><div class="hnum">${num}</div><p>${desc}</p><a class="call-btn" href="tel:+${clean}">📞 Call Now</a><div class="dev-edit-row"><button class="edit-mini-btn" onclick="openHelplineEdit(this.closest('.helpline-card'))">✏️ Edit</button></div>`;
+    document.getElementById('helplineGrid').appendChild(card);
+    ['h-name','h-icon','h-num','h-desc'].forEach(id => document.getElementById(id).value='');
+    const s = document.getElementById('helpSuccess'); s.style.display='block'; setTimeout(()=>s.style.display='none',3000);
+  }
+
+  // ── EDIT MODALS ──
+  function openFacultyEdit(card) {
+    currentEditCard = card; currentEditType = 'faculty';
+    document.getElementById('editModalTitle').textContent = '✏️ Edit Faculty';
+    document.getElementById('editModalBody').innerHTML = `
+      <label>Full Name</label><input id="e-name" value="${card.dataset.name||''}">
+      <label>Subject</label><input id="e-subject" value="${card.dataset.subject||''}">
+      <label>Qualification</label><input id="e-qual" value="${card.dataset.qual||''}">
+      <label>Room / Office</label><input id="e-room" value="${card.dataset.room||''}">
+      <label>Available Hours</label><input id="e-hours" value="${card.dataset.hours||''}">
+      <label>Email</label><input id="e-email" value="${card.dataset.email||''}">
+      <label>Phone</label><input id="e-phone" value="${card.dataset.phone||''}">`;
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function openHelplineEdit(card) {
+    currentEditCard = card; currentEditType = 'helpline';
+    document.getElementById('editModalTitle').textContent = '✏️ Edit Helpline';
+    document.getElementById('editModalBody').innerHTML = `
+      <label>Department Name</label><input id="e-name" value="${card.dataset.name||''}">
+      <label>Icon (emoji)</label><input id="e-icon" value="${card.dataset.icon||''}">
+      <label>Phone Number</label><input id="e-num" value="${card.dataset.num||''}">
+      <label>Description</label><textarea id="e-desc">${card.dataset.desc||''}</textarea>`;
+    document.getElementById('editModal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+    currentEditCard = null; currentEditType = null;
+  }
+
+  function saveEdit() {
+    if (!currentEditCard) return;
+    if (currentEditType === 'faculty') {
+      const name = document.getElementById('e-name').value.trim();
+      const subject = document.getElementById('e-subject').value.trim();
+      const qual = document.getElementById('e-qual').value.trim();
+      const room = document.getElementById('e-room').value.trim();
+      const hours = document.getElementById('e-hours').value.trim();
+      const email = document.getElementById('e-email').value.trim();
+      const phone = document.getElementById('e-phone').value.trim();
+      currentEditCard.dataset.name = name; currentEditCard.dataset.subject = subject;
+      currentEditCard.dataset.qual = qual; currentEditCard.dataset.room = room;
+      currentEditCard.dataset.hours = hours; currentEditCard.dataset.email = email; currentEditCard.dataset.phone = phone;
+      currentEditCard.querySelector('h3').textContent = name;
+      currentEditCard.querySelector('.subject').textContent = subject;
+      currentEditCard.querySelector('.meta').innerHTML = `${qual?'📚 '+qual+'<br>':''}${room?'🏢 '+room+'<br>':''}${hours?'📅 '+hours:''}`;
+      currentEditCard.querySelector('.contact-btn').onclick = () => alert(`📧 ${email||'N/A'}\n📞 ${phone||'N/A'}`);
+      // Update avatar initials if no image
+      const av = currentEditCard.querySelector('.faculty-avatar');
+      if (av) { const initials = name.split(' ').filter(w=>w.match(/[A-Za-z]/)).map(w=>w[0].toUpperCase()).slice(0,2).join(''); av.textContent = initials; }
+    } else if (currentEditType === 'helpline') {
+      const name = document.getElementById('e-name').value.trim();
+      const icon = document.getElementById('e-icon').value.trim();
+      const num = document.getElementById('e-num').value.trim();
+      const desc = document.getElementById('e-desc').value.trim();
+      currentEditCard.dataset.name = name; currentEditCard.dataset.icon = icon;
+      currentEditCard.dataset.num = num; currentEditCard.dataset.desc = desc;
+      currentEditCard.querySelector('h3').textContent = name;
+      currentEditCard.querySelector('.helpline-icon').textContent = icon;
+      currentEditCard.querySelector('.hnum').textContent = num;
+      currentEditCard.querySelector('p').textContent = desc;
+      const clean = num.replace(/\D/g,'');
+      currentEditCard.querySelector('.call-btn').href = `tel:+${clean}`;
+    }
+    closeEditModal();
+  }
+
+  // ── IMAGE UPLOAD FOR FACULTY ──
+  function uploadFacultyImg(card) {
+    imgTargetCard = card;
+    document.getElementById('imgUploader').click();
+  }
+  document.getElementById('imgUploader').addEventListener('change', function() {
+    if (!this.files[0] || !imgTargetCard) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let av = imgTargetCard.querySelector('.faculty-avatar');
+      let img = imgTargetCard.querySelector('.faculty-avatar-img');
+      if (av) {
+        const initials = av.textContent;
+        av.outerHTML = `<img class="faculty-avatar-img" src="${e.target.result}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:16px;">`;
+      } else if (img) {
+        img.src = e.target.result;
+      }
+      imgTargetCard = null;
+    };
+    reader.readAsDataURL(this.files[0]);
+  });
+
+  // ── QUERY FORM ──
+  function submitForm() {
+    const name = document.getElementById('f-name').value;
+    const email = document.getElementById('f-email').value;
+    const dept = document.getElementById('f-dept').value;
+    const msg = document.getElementById('f-msg').value;
+    if (!name || !email || !dept || !msg) { alert('Please fill in all fields.'); return; }
+    document.getElementById('successMsg').style.display = 'block';
+    ['f-name','f-email','f-dept','f-msg'].forEach(id => document.getElementById(id).value='');
+    setTimeout(() => document.getElementById('successMsg').style.display='none', 4000);
+  }
+
+  // Close modals on overlay click
+  document.getElementById('devModal').addEventListener('click', function(e) { if(e.target===this) closeDevModal(); });
+  document.getElementById('editModal').addEventListener('click', function(e) { if(e.target===this) closeEditModal(); });
+</script>
+</body>
+</html>
